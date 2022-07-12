@@ -336,6 +336,7 @@ public class MainActivity extends AppCompatActivity {
          */
         public void start(){
             sendTime();
+            sendTemp();
             String requests = "start,0";
             arduino.getServer().sendAsyncRequest(requests);
         }
@@ -377,9 +378,9 @@ public class MainActivity extends AppCompatActivity {
                 //OpenConnectionSendRequests
                 if(getState().equals(Bath.STATE_READY)){
                     String requests = "setTime0," + arduino.cooler0.toString();
-                    arduino.getServer().sendAsyncRequest(requests);
+                    this.server.sendAsyncRequest(requests);
                     requests = "setTime1," + arduino.cooler1.toString();
-                    arduino.getServer().sendAsyncRequest(requests);
+                    this.server.sendAsyncRequest(requests);
                 }
             }catch(Exception ex){
                 Log.i("sendTime", "" + ex);
@@ -394,7 +395,7 @@ public class MainActivity extends AppCompatActivity {
                 String requests = "setTemp,"+ temp;
                 this.server.sendAsyncRequest(requests);
             }catch(Exception ex){
-                Log.i("sendTime", "" + ex);
+                Log.i("sendTemp", "" + ex);
             }
         }
         public void setTemp(int temp){
@@ -412,6 +413,51 @@ public class MainActivity extends AppCompatActivity {
             cooler0.clearTime();
             cooler1.clearTime();
         }
+
+        public void update(){
+            boolean connection = false;
+            String str = "";
+            try {
+                String random = (int) (Math.random() * 10000) + "";
+                str = this.getServer().sendRequest("connection," + random);
+                if (str.split(",")[0].equals("connection")) {
+                    if (str.split(",")[1].equals(random)) {
+                        connection = true;
+                    }
+                }
+            }catch(Exception ex) {
+                Log.wtf("ERROR", ex);
+            }
+            this.setConnection(connection);
+            try{
+                if(this.getConnection()){
+                    str = this.getServer().sendRequest("state,0");
+                    if(str.split(",")[0].equals("state")){
+                        if(!this.getState().equals(str.split(",")[1]))
+                            this.setState(str.split(",")[1]);
+
+                        tempFragment.setTemperature((int)Float.parseFloat(str.split(",")[2]));
+                    }
+                    if(this.getState().equals(Bath.STATE_TIME0)){
+                        str = this.getServer().sendRequest("getTime,0");
+                        if(str.split(",")[0].equals("getTime")){
+                            this.getCooler(0).setSecondTime(Integer.parseInt(str.split(",")[1]));
+                        }
+                    }
+                    if(this.getState().equals(Bath.STATE_TIME1)){
+                        str = this.getServer().sendRequest("getTime,1");
+                        if(str.split(",")[0].equals("getTime")){
+                            this.getCooler(1).setSecondTime(Integer.parseInt(str.split(",")[1]));
+                        }
+                    }
+                } else {
+
+                }
+            } catch (Exception ex) {
+                Log.i("initConnect", "" + Arrays.toString(ex.getStackTrace()));
+            }
+        }
+
 
         /**
          * class for information user about time
