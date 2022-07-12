@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         savePreference = getSharedPreferences("MyPref", MODE_PRIVATE);
         initUI();
-        initConnect();
+        //initConnect();
     }
     /**
      * Init UI for app
@@ -68,9 +68,13 @@ public class MainActivity extends AppCompatActivity {
             SharedPreferences.Editor ed = savePreference.edit();
             ed.putString(KEY_IP, editTextIP.getText().toString());
             ed.apply();
-            if(!arduino.getConnection())
+            if(!arduino.getConnection()){
                 initConnect();
+                startService(new Intent(this, ConnectionService.class));
+            }
+
         });
+
         buttonPlayOrPause = findViewById(R.id.buttonStart);
         buttonPlayOrPause.setOnClickListener((View view)->{
             if(arduino.getState().equals(Bath.STATE_READY)){
@@ -81,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
                 MainActivity.this.runOnUiThread(()->buttonPlayOrPause.setBackgroundResource(R.drawable.icons8_play_32));
             }
         });
+
         Button buttonStop = findViewById(R.id.buttonStop);
         buttonStop.setOnClickListener((View view)->{
             arduino.stop();
@@ -236,17 +241,6 @@ public class MainActivity extends AppCompatActivity {
         public static final String STATE_TEMP = "temp";
         public static final String STATE_TIME0 = "time0";
         public static final String STATE_TIME1 = "time1";
-//        enum STATE{
-//            READY("ready"),
-//            STOP("stop"),
-//            TIME0("time0"),
-//            TIME1("time1");
-//
-//            private String title;
-//            STATE(String title){
-//                this.title = title;
-//            }
-//        }
 
         private String state ="";
         private int temp = 50;
@@ -341,7 +335,6 @@ public class MainActivity extends AppCompatActivity {
          */
         public void start(){
             sendTime();
-            sendTemp();
             String requests = "start,0";
             arduino.getServer().sendAsyncRequest(requests);
         }
@@ -355,13 +348,6 @@ public class MainActivity extends AppCompatActivity {
         /**
          * stop bath by wifi
          */
-        public void stop(){
-            String requests = "stop,0";
-            arduino.getServer().sendAsyncRequest(requests);
-            arduino.clearTime();
-            MainActivity.this.runOnUiThread(()->buttonPlayOrPause.setBackgroundResource(R.drawable.icons8_play_32));
-            sendNotification("Готово", "Твоё время пришло...");
-        }
         public void stop(){
             String requests = "stop,0";
             arduino.getServer().sendAsyncRequest(requests);
