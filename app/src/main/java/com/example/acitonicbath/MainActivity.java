@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
         savePreference = getSharedPreferences("MyPref", MODE_PRIVATE);
         initUI();
         //initConnect();
+        //startService(new Intent(this, ConnectionService.class));
     }
     /**
      * Init UI for app
