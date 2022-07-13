@@ -200,7 +200,7 @@ public:
   void stop(){
     vent0.off();
     vent1.off();
-    state = "ready";
+    state = "stop";
     vent0 = VENT();
     vent1 = VENT();
   }
@@ -326,6 +326,10 @@ void readMessage(String str){
   }
   if(command.equals("stop")){
     bath.stop();
+    return;
+  }
+  if(command.equals("setReady")){
+    bath.setState("ready");
     return;
   }
   if(command.equals("setTemp")) {

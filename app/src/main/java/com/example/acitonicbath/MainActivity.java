@@ -1,18 +1,12 @@
 package com.example.acitonicbath;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
 import androidx.core.view.GestureDetectorCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -50,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         savePreference = getSharedPreferences("MyPref", MODE_PRIVATE);
         initUI();
+        new ConnectionService(arduino);
         //initConnect();
         //startService(new Intent(this, ConnectionService.class));
     }
@@ -196,37 +191,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }, 0, 1000);
     }
-
-    /**
-     * send notification on phone
-     * @param title title which show
-     * @param text text which show
-     */
-    public void sendNotification(String title, String text){
-        final int NOTIFY_ID = 1;
-        final String CHANNEL_ID = "Done";
-        final int PRIORITY_HIGH = 1;
-        final int DEFAULT_ALL = ~0;
-        NotificationManager notificationManager = (NotificationManager)getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        NotificationCompat.Builder notificationBuilder =
-                new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
-                        .setAutoCancel(false)
-                        .setSmallIcon(R.drawable.ic_launcher_foreground)
-                        .setWhen(System.currentTimeMillis())
-                        .setContentIntent(pendingIntent)
-                        .setContentTitle(title)
-                        .setContentText(text)
-                        .setPriority(PRIORITY_HIGH)
-                        .setDefaults(DEFAULT_ALL);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, CHANNEL_ID, NotificationManager.IMPORTANCE_DEFAULT);
-            notificationManager.createNotificationChannel(notificationChannel);
-        }
-        notificationManager.notify(NOTIFY_ID, notificationBuilder.build());
-    }
     /**
      * class Bath is real Model Bath
      * can start, stop, pause, real Bath
@@ -261,12 +225,6 @@ public class MainActivity extends AppCompatActivity {
                         stop();
                         break;
                     case STATE_READY:
-                        int hours = (cooler0.workingTime.get(Calendar.HOUR_OF_DAY) + cooler1.workingTime.get(Calendar.HOUR_OF_DAY));
-                        int minutes = (cooler0.workingTime.get(Calendar.MINUTE) + cooler1.workingTime.get(Calendar.MINUTE));
-                        int seconds = (cooler0.workingTime.get(Calendar.SECOND) + cooler1.workingTime.get(Calendar.SECOND));
-                        if((hours+minutes+seconds) == 0){
-                            stop();
-                        }
                         break;
                     case STATE_TIME0:
                     case STATE_TIME1:
@@ -355,7 +313,6 @@ public class MainActivity extends AppCompatActivity {
             arduino.getServer().sendAsyncRequest(requests);
             arduino.clearTime();
             MainActivity.this.runOnUiThread(()->buttonPlayOrPause.setBackgroundResource(R.drawable.icons8_play_32));
-            sendNotification("Готово", "Твоё время пришло...");
         }
         /**
          * update text all time
@@ -456,6 +413,9 @@ public class MainActivity extends AppCompatActivity {
             } catch (Exception ex) {
                 Log.i("initConnect", "" + Arrays.toString(ex.getStackTrace()));
             }
+        }
+        public void setReady(){
+
         }
 
 
