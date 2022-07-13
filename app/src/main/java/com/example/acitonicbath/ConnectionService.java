@@ -1,5 +1,6 @@
 package com.example.acitonicbath;
 
+<<<<<<< Updated upstream
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.Notification;
@@ -48,10 +49,30 @@ public class ConnectionService extends Service {
                 1000,
                 getAlarmPendingIntent()
         );
+=======
+import android.app.Service;
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
+import android.widget.Toast;
+
+public class ConnectionService extends Service {
+    static MainActivity mainActivity;
+    public ConnectionService(){}
+    public ConnectionService(MainActivity mainActivity) {
+        this.mainActivity = mainActivity;
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+>>>>>>> Stashed changes
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+<<<<<<< Updated upstream
         super.onStartCommand(intent, flags, startId);
         update();
         Log.wtf(TAG, "onStartCommand");
@@ -156,10 +177,31 @@ public class ConnectionService extends Service {
     public void onRebind(Intent intent) {
         Log.wtf(TAG, "onRebind");
         super.onRebind(intent);
+=======
+        //startForeground();
+        Toast.makeText(this, "Служба запущена",
+                Toast.LENGTH_SHORT).show();
+
+        mainActivity.initConnect();
+
+        return Service.START_STICKY;
+
+
+        //return super.onStartCommand(intent, flags, startId);
+    }
+    MyBinder m = new MyBinder();
+    public class MyBinder extends android.os.Binder{
+        ConnectionService getService(){
+            // Simply return a reference to this instance
+            //of the Service.
+            return ConnectionService.this;
+        }
+>>>>>>> Stashed changes
     }
 
     @Override
     public void onDestroy() {
+<<<<<<< Updated upstream
         Log.wtf(TAG, "onDestroy");
         super.onDestroy();
 
@@ -177,4 +219,13 @@ public class ConnectionService extends Service {
 
         super.onLowMemory();
     }
+=======
+        super.onDestroy();
+        Toast.makeText(this, "Служба остановлена",
+                Toast.LENGTH_SHORT).show();
+
+    }
+
+
+>>>>>>> Stashed changes
 }

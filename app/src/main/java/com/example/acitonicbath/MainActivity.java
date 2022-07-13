@@ -4,10 +4,23 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GestureDetectorCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+<<<<<<< Updated upstream
+=======
+
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.Service;
+import android.content.ComponentName;
+import android.content.Context;
+>>>>>>> Stashed changes
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -40,17 +53,23 @@ public class MainActivity extends AppCompatActivity {
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        new ConnectionService(MainActivity.this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         savePreference = getSharedPreferences("MyPref", MODE_PRIVATE);
         initUI();
+<<<<<<< Updated upstream
         new ConnectionService(arduino);
         //initConnect();
         //startService(new Intent(this, ConnectionService.class));
+=======
+>>>>>>> Stashed changes
     }
     /**
      * Init UI for app
      */
+    Service mService;
+    boolean mServiceBound;
     public void initUI(){
         setFragment(timeFragment, false);
         setFragment(tempFragment, false);
@@ -64,11 +83,43 @@ public class MainActivity extends AppCompatActivity {
             SharedPreferences.Editor ed = savePreference.edit();
             ed.putString(KEY_IP, editTextIP.getText().toString());
             ed.apply();
+<<<<<<< Updated upstream
             if(!arduino.getConnection()){
                 initConnect();
                 startService(new Intent(this, ConnectionService.class));
             }
 
+=======
+
+            Intent intent = new Intent(MainActivity.this, ConnectionService.class);
+            ServiceConnection mServiceConnection = new ServiceConnection(){
+                public void onServiceConnected(
+                        ComponentName cName, IBinder service){
+                        ConnectionService.MyBinder binder = (ConnectionService.MyBinder) service;
+                        mService = binder.getService();
+                        // Get a reference to the Bound Service object.
+                        mServiceBound = true;
+                }
+                public void onServiceDisconnected(ComponentName cName){
+                    mServiceBound= false;
+                }
+            };
+
+            bindService(intent, mServiceConnection, BIND_AUTO_CREATE);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+                if(!mServiceBound){
+                    //startService(intent);
+
+                    startForegroundService(intent);
+
+                }
+            }
+
+//            if(!arduino.getConnection())
+//                initConnect();
+>>>>>>> Stashed changes
         });
 
         buttonPlayOrPause = findViewById(R.id.buttonStart);
@@ -134,10 +185,13 @@ public class MainActivity extends AppCompatActivity {
         ipAddress = ipAddress.split(":")[0];
         arduino.setServer(new WebServer(ipAddress, portNumber));
         CheckBox checkBox = findViewById(R.id.checkBox);
+
+
         Timer myTimer = new Timer();
         myTimer.schedule(new TimerTask() {
             @Override
             public void run() {
+                Log.wtf("WORKING", "qwazesxrdctfvybghujimok");
                 //{command, args}
                 boolean connection = false;
                 String str = "";
@@ -207,7 +261,7 @@ public class MainActivity extends AppCompatActivity {
         public static final String STATE_TIME0 = "time0";
         public static final String STATE_TIME1 = "time1";
 
-        private String state ="";
+        private String state ="ready";
         private int temp = 50;
         private Cooler cooler0 = new Cooler();
         private Cooler cooler1 = new Cooler();
@@ -313,6 +367,10 @@ public class MainActivity extends AppCompatActivity {
             arduino.getServer().sendAsyncRequest(requests);
             arduino.clearTime();
             MainActivity.this.runOnUiThread(()->buttonPlayOrPause.setBackgroundResource(R.drawable.icons8_play_32));
+<<<<<<< Updated upstream
+=======
+            sendNotification("Готово", "Твоё время пришло...");
+>>>>>>> Stashed changes
         }
         /**
          * update text all time
