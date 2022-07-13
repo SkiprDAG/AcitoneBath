@@ -1,7 +1,5 @@
 package com.example.acitonicbath;
 
-<<<<<<< Updated upstream
-import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -11,24 +9,11 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.os.Debug;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
-import android.os.PowerManager;
-import android.os.SystemClock;
 import android.util.Log;
-import android.widget.Toast;
-
 import androidx.core.app.NotificationCompat;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.GregorianCalendar;
-import java.util.Objects;
 
 public class ConnectionService extends Service {
     private final String TAG = "ConnectionService";
@@ -49,30 +34,10 @@ public class ConnectionService extends Service {
                 1000,
                 getAlarmPendingIntent()
         );
-=======
-import android.app.Service;
-import android.content.ComponentName;
-import android.content.Intent;
-import android.content.ServiceConnection;
-import android.os.IBinder;
-import android.widget.Toast;
-
-public class ConnectionService extends Service {
-    static MainActivity mainActivity;
-    public ConnectionService(){}
-    public ConnectionService(MainActivity mainActivity) {
-        this.mainActivity = mainActivity;
-    }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
->>>>>>> Stashed changes
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-<<<<<<< Updated upstream
         super.onStartCommand(intent, flags, startId);
         update();
         Log.wtf(TAG, "onStartCommand");
@@ -112,7 +77,6 @@ public class ConnectionService extends Service {
     void update(){
         Log.wtf(TAG, "THREAD");
         new Thread(() -> {
-            int i=0;
             while(true){
                 String str =  bath.getServer().sendRequest("state,0");
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
@@ -177,31 +141,10 @@ public class ConnectionService extends Service {
     public void onRebind(Intent intent) {
         Log.wtf(TAG, "onRebind");
         super.onRebind(intent);
-=======
-        //startForeground();
-        Toast.makeText(this, "Служба запущена",
-                Toast.LENGTH_SHORT).show();
-
-        mainActivity.initConnect();
-
-        return Service.START_STICKY;
-
-
-        //return super.onStartCommand(intent, flags, startId);
-    }
-    MyBinder m = new MyBinder();
-    public class MyBinder extends android.os.Binder{
-        ConnectionService getService(){
-            // Simply return a reference to this instance
-            //of the Service.
-            return ConnectionService.this;
-        }
->>>>>>> Stashed changes
     }
 
     @Override
     public void onDestroy() {
-<<<<<<< Updated upstream
         Log.wtf(TAG, "onDestroy");
         super.onDestroy();
 
@@ -216,16 +159,6 @@ public class ConnectionService extends Service {
     @Override
     public void onLowMemory() {
         Log.wtf(TAG, "onLowMemory");
-
         super.onLowMemory();
     }
-=======
-        super.onDestroy();
-        Toast.makeText(this, "Служба остановлена",
-                Toast.LENGTH_SHORT).show();
-
-    }
-
-
->>>>>>> Stashed changes
 }
