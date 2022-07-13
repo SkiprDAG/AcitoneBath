@@ -45,15 +45,15 @@ public class ConnectionService extends Service {
         createNotificationChannel();
         Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this,
-                0, notificationIntent, 0);
+                0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_NO_CREATE);
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle("Foreground Service")
+                .setContentTitle("Connection")
                 .setContentText(input)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentIntent(pendingIntent)
                 .build();
         startForeground(1, notification);
-        return START_NOT_STICKY;
+        return START_STICKY;
     }
 
     private void createNotificationChannel() {
@@ -75,16 +75,14 @@ public class ConnectionService extends Service {
     }
 
     void update(){
-        Log.wtf(TAG, "THREAD");
         new Thread(() -> {
             while(true){
                 String str =  bath.getServer().sendRequest("state,0");
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.wtf(TAG, "STATE"+str);
-                        if(str.split(",")[1].equals("stop")){
-                            sendNotification("Готово", "Твоё время пришло...", true);
+                        if(str != null && str.split(",")[1].equals("stop")){
+                            sendNotification("Готово", "Твоё время пришло...");
                             bath.getServer().sendAsyncRequest("setReady,0");
                         }
                     }
@@ -97,7 +95,7 @@ public class ConnectionService extends Service {
      * @param title title which show
      * @param text text which show
      */
-    public void sendNotification(String title, String text, boolean type){
+    public void sendNotification(String title, String text){
         final int NOTIFY_ID = 1;
         final String CHANNEL_ID = "Done";
         final int PRIORITY_HIGH = 1;
@@ -119,11 +117,7 @@ public class ConnectionService extends Service {
             NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, CHANNEL_ID, NotificationManager.IMPORTANCE_DEFAULT);
             notificationManager.createNotificationChannel(notificationChannel);
         }
-        if(type){
-            notificationManager.notify(NOTIFY_ID, notificationBuilder.build());
-        }else{
-            notificationManager.notify(2, notificationBuilder.build());
-        }
+        notificationManager.notify(NOTIFY_ID, notificationBuilder.build());
     }
 
     @Override
