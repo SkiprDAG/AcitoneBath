@@ -17,61 +17,50 @@ import androidx.core.app.NotificationCompat;
 
 public class ConnectionService extends Service {
     private final String TAG = "ConnectionService";
-    public static final String CHANNEL_ID = "ForegroundServiceChannel";
+    private final String ID = "ConnectionID";
+
     public static MainActivity.Bath bath;
     public ConnectionService(){}
     public ConnectionService(MainActivity.Bath bath){
         this.bath = bath;
     }
+
     @Override
     public void onCreate() {
         super.onCreate();
         Log.wtf(TAG, "onCreate");
-        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        alarmManager.setInexactRepeating(
-                AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                System.currentTimeMillis()+100,
-                1000,
-                getAlarmPendingIntent()
-        );
     }
+
+
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
         update();
-        Log.wtf(TAG, "onStartCommand");
-        String input = intent.getStringExtra("inputExtra");
+
         createNotificationChannel();
-        Intent notificationIntent = new Intent(this, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this,
-                0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_NO_CREATE);
-        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+
+        Intent intent1 = new Intent(this, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent1, 0);
+        Notification notification = new NotificationCompat.Builder(this, ID)
                 .setContentTitle("Connection")
-                .setContentText(input)
+                .setContentText("Start")
                 .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentIntent(pendingIntent)
-                .build();
-        startForeground(1, notification);
+                .setContentIntent(pendingIntent).build();
+
+        startForeground(1001, notification);
+        Log.wtf(TAG, "onStartCommand");
         return START_STICKY;
     }
 
     private void createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel serviceChannel = new NotificationChannel(
-                    CHANNEL_ID,
-                    "Foreground Service Channel",
-                    NotificationManager.IMPORTANCE_DEFAULT
-            );
-            NotificationManager manager = getSystemService(NotificationManager.class);
-            manager.createNotificationChannel(serviceChannel);
-        }
-    }
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            NotificationChannel notificationChannel = new NotificationChannel(
+                    ID, "2", NotificationManager.IMPORTANCE_LOW);
 
-    private PendingIntent getAlarmPendingIntent(){
-        Intent alarmIntent = new Intent(this, ConnectionService.class);
-        alarmIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        return PendingIntent.getService(this, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(notificationChannel);
+        }
     }
 
     void update(){
@@ -84,6 +73,8 @@ public class ConnectionService extends Service {
                         if(str != null && str.split(",")[1].equals("stop")){
                             sendNotification("Готово", "Твоё время пришло...");
                             bath.getServer().sendAsyncRequest("setReady,0");
+                            stopForeground(true);
+                            stopSelf();
                         }
                     }
                 });
@@ -100,11 +91,11 @@ public class ConnectionService extends Service {
         final String CHANNEL_ID = "Done";
         final int PRIORITY_HIGH = 1;
         NotificationManager notificationManager = (NotificationManager)getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Builder notificationBuilder =
-                new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
+                new NotificationCompat.Builder(this, CHANNEL_ID)
                         .setAutoCancel(false)
                         .setSmallIcon(R.drawable.ic_launcher_foreground)
                         .setWhen(System.currentTimeMillis())
@@ -140,8 +131,9 @@ public class ConnectionService extends Service {
     @Override
     public void onDestroy() {
         Log.wtf(TAG, "onDestroy");
+        stopForeground(true);
+        stopSelf();
         super.onDestroy();
-
     }
 
     @Override

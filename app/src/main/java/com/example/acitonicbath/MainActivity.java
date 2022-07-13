@@ -1,5 +1,6 @@
 package com.example.acitonicbath;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GestureDetectorCompat;
 import androidx.fragment.app.Fragment;
@@ -7,6 +8,7 @@ import androidx.fragment.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -66,9 +68,7 @@ public class MainActivity extends AppCompatActivity {
             ed.apply();
             if(!arduino.getConnection()){
                 initConnect();
-                startService(new Intent(this, ConnectionService.class));
             }
-
         });
 
         buttonPlayOrPause = findViewById(R.id.buttonStart);
@@ -76,6 +76,9 @@ public class MainActivity extends AppCompatActivity {
             if(arduino.getState().equals(Bath.STATE_READY)){
                 arduino.start();
                 MainActivity.this.runOnUiThread(()->buttonPlayOrPause.setBackgroundResource(R.drawable.icons8_pause_32));
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+                    startForegroundService(new Intent(this, ConnectionService.class));
+                }
             } else {
                 arduino.pause();
                 MainActivity.this.runOnUiThread(()->buttonPlayOrPause.setBackgroundResource(R.drawable.icons8_play_32));
