@@ -34,7 +34,7 @@ public class ConnectionService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
         stateUpdateNotification();
-        createImmortalNottification("Connection", "Start");
+        createImmortalNotification("Connection", "Start");
         Log.wtf(TAG, "onStartCommand");
         return START_STICKY;
     }
@@ -72,7 +72,7 @@ public class ConnectionService extends Service {
      * @param title title which show
      * @param text text which show
      */
-    private void createImmortalNottification(String title, String text){
+    private void createImmortalNotification(String title, String text){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             NotificationChannel notificationChannel = new NotificationChannel(
                     ID, "2", NotificationManager.IMPORTANCE_LOW);
