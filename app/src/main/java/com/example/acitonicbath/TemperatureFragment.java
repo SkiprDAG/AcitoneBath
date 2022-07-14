@@ -25,27 +25,31 @@ import com.broooapps.graphview.models.PointMap;
 import java.util.LinkedList;
 
 public class TemperatureFragment extends Fragment {
+    private TextView stateTxtView;
     private TextView temp;
     private int temperature;
     private LinkedList<Integer> tempList = new LinkedList<>();
     private CurveGraphView curveGraphView;
+    MainActivity.Bath bath;
+    public TemperatureFragment(MainActivity.Bath bath){
+        this.bath = bath;
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_temperature, container, false);
         temp = rootView.findViewById(R.id.temp);
-
-
+        stateTxtView = rootView.findViewById(R.id.txtStateViewTemp);
         curveGraphView = rootView.findViewById(R.id.cgv);
         curveGraphView.configure(
                 new CurveGraphConfig.Builder(this.getContext())
-                        .setAxisColor(Color.rgb(227,37,107))                                             // Set number of values to be displayed in X ax
-                        .setVerticalGuideline(4)                                                // Set number of background guidelines to be shown.
+                        .setAxisColor(Color.rgb(227,37,107))
+                        .setVerticalGuideline(4)
                         .setHorizontalGuideline(2)
-                        .setGuidelineColor(Color.RED)                                         // Set color of the visible guidelines.
-                        .setNoDataMsg(" Нет данных ")                                              // Message when no data is provided to the view.
-                        .setxAxisScaleTextColor(Color.WHITE)                                  // Set X axis scale text color.
-                        .setyAxisScaleTextColor(Color.WHITE)                                  // Set Y axis scale text color
-                        .setAnimationDuration(1000)                                             // Set Animation Duration
+                        .setGuidelineColor(Color.RED)
+                        .setNoDataMsg(" Нет данных ")
+                        .setxAxisScaleTextColor(Color.WHITE)
+                        .setyAxisScaleTextColor(Color.WHITE)
+                        .setAnimationDuration(1000)
                         .build()
         );
         PointMap pointMap = new PointMap();
@@ -87,6 +91,7 @@ public class TemperatureFragment extends Fragment {
         TemperatureFragment.this.getActivity().runOnUiThread(()->{
             curveGraphView.setData(tempList.size(), finalMax, gd2);
             this.temp.setText(String.format("%d°С", temperature));
+            stateTxtView.setText(bath.getStateRUS());
         });
     }
     public void setTemperature(int temp){

@@ -1,18 +1,58 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 
+/**
+██████╗░███████╗██╗░░░██╗███████╗██╗░░░░░░█████╗░██████╗░███╗░░░███╗███████╗███╗░░██╗████████╗░░░██████╗░██╗░░░██╗
+██╔══██╗██╔════╝██║░░░██║██╔════╝██║░░░░░██╔══██╗██╔══██╗████╗░████║██╔════╝████╗░██║╚══██╔══╝░░░██╔══██╗╚██╗░██╔╝
+██║░░██║█████╗░░╚██╗░██╔╝█████╗░░██║░░░░░██║░░██║██████╔╝██╔████╔██║█████╗░░██╔██╗██║░░░██║░░░░░░██████╦╝░╚████╔╝░
+██║░░██║██╔══╝░░░╚████╔╝░██╔══╝░░██║░░░░░██║░░██║██╔═══╝░██║╚██╔╝██║██╔══╝░░██║╚████║░░░██║░░░░░░██╔══██╗░░╚██╔╝░░
+██████╔╝███████╗░░╚██╔╝░░███████╗███████╗╚█████╔╝██║░░░░░██║░╚═╝░██║███████╗██║░╚███║░░░██║░░░██╗██████╦╝░░░██║░░░
+╚═════╝░╚══════╝░░░╚═╝░░░╚══════╝╚══════╝░╚════╝░╚═╝░░░░░╚═╝░░░░░╚═╝╚══════╝╚═╝░░╚══╝░░░╚═╝░░░╚═╝╚═════╝░░░░╚═╝░░░
+
+██╗░░██╗░█████╗░░██████╗████████╗░█████╗░███╗░░██╗███████╗████████╗
+██║░██╔╝██╔══██╗██╔════╝╚══██╔══╝██╔══██╗████╗░██║██╔════╝╚══██╔══╝
+█████═╝░██║░░██║╚█████╗░░░░██║░░░██║░░██║██╔██╗██║█████╗░░░░░██║░░░
+██╔═██╗░██║░░██║░╚═══██╗░░░██║░░░██║░░██║██║╚████║██╔══╝░░░░░██║░░░
+██║░╚██╗╚█████╔╝██████╔╝░░░██║░░░╚█████╔╝██║░╚███║███████╗░░░██║░░░
+╚═╝░░╚═╝░╚════╝░╚═════╝░░░░╚═╝░░░░╚════╝░╚═╝░░╚══╝╚══════╝░░░╚═╝░░░
+
+░██████╗██╗░░██╗██╗██████╗░██████╗░░█████╗░░██████╗░██╗░░░██╗░░░░░░░░█████╗░░█████╗░░█████╗░░░██╗██╗██████╗░
+██╔════╝██║░██╔╝██║██╔══██╗██╔══██╗██╔══██╗██╔════╝░██║░░░██║░░██╗░░██╔══██╗██╔══██╗██╔══██╗░██╔╝██║██╔══██╗
+╚█████╗░█████═╝░██║██████╔╝██║░░██║███████║██║░░██╗░██║░░░██║██████╗██║░░██║██║░░██║██║░░╚═╝██╔╝░██║██║░░██║
+░╚═══██╗██╔═██╗░██║██╔═══╝░██║░░██║██╔══██║██║░░╚██╗██║░░░██║╚═██╔═╝██║░░██║██║░░██║██║░░██╗███████║██║░░██║
+██████╔╝██║░╚██╗██║██║░░░░░██████╔╝██║░░██║╚██████╔╝╚██████╔╝░░╚═╝░░╚█████╔╝╚█████╔╝╚█████╔╝╚════██║██████╔╝
+╚═════╝░╚═╝░░╚═╝╚═╝╚═╝░░░░░╚═════╝░╚═╝░░╚═╝░╚═════╝░░╚═════╝░░░░░░░░░╚════╝░░╚════╝░░╚════╝░░░░░░╚═╝╚═════╝░
+
+██╗░░░░░██╗███╗░░░███╗██████╗░░█████╗░██╗░░██╗
+██║░░░░░██║████╗░████║██╔══██╗██╔══██╗██║░██╔╝
+██║░░░░░██║██╔████╔██║██████╔╝███████║█████═╝░
+██║░░░░░██║██║╚██╔╝██║██╔══██╗██╔══██║██╔═██╗░
+███████╗██║██║░╚═╝░██║██║░░██║██║░░██║██║░╚██╗
+╚══════╝╚═╝╚═╝░░░░░╚═╝╚═╝░░╚═╝╚═╝░░╚═╝╚═╝░░╚═╝
+
+██████╗░██╗░░░██╗████████╗████████╗██████╗░░█████╗░░█████╗░██╗░░██╗░█████╗░
+██╔══██╗██║░░░██║╚══██╔══╝╚══██╔══╝██╔══██╗██╔══██╗██╔══██╗██║░░██║██╔══██╗
+██████╦╝██║░░░██║░░░██║░░░░░░██║░░░██████╔╝██║░░██║██║░░██║███████║███████║
+██╔══██╗██║░░░██║░░░██║░░░░░░██║░░░██╔══██╗██║░░██║██║░░██║██╔══██║██╔══██║
+██████╦╝╚██████╔╝░░░██║░░░░░░██║░░░██║░░██║╚█████╔╝╚█████╔╝██║░░██║██║░░██║
+╚═════╝░░╚═════╝░░░░╚═╝░░░░░░╚═╝░░░╚═╝░░╚═╝░╚════╝░░╚════╝░╚═╝░░╚═╝╚═╝░░╚═╝ 
+ */
+
 /* Установите здесь свои SSID и пароль */
-const char ssid[] = "AcitonicBath";//wanna change
+const char ssid[] = "AcitonicBath";
 const char password[] = "12345678";
 
 ESP8266WebServer server(80);
 
 #define VENT1 D0//Куллер 1 на выводе 0
 #define VENT2 D5//Куллер 2 на выводе 5
-
-#define BUTTON D3// кнопка на выводе 3
-#define SENSORPIN D0
-
+#define BUTTON D1// кнопка на выводе 1
+#define SENSORPIN D2//Датчик на выводе 2
+#define HEATINGPIN D3//Нагревательный элемент на выводе 3
+/**
+ * @brief class vent simulate cooleer
+ * 
+ */
 class VENT{
   long startTime = 0;
   long workingTime = 0;
@@ -23,15 +63,27 @@ public:
     this->workingTime = workingTime;
     this->id = id;
   }  
-  
+  /**
+   * @brief Get the Working Time object
+   * 
+   * @return long 
+   */
   long getWorkingTime(){
     return workingTime;
   }
-  
+  /**
+   * @brief Get the Left Time object
+   * 
+   * @return long 
+   */
   long getLeftTime(){
     return workingTime - getPastTime();  
   }
-  
+  /**
+   * @brief Get the Past Time object
+   * 
+   * @return long 
+   */
   long getPastTime(){
     long currentTime = millis();
     if(startTime==0){
@@ -39,87 +91,126 @@ public:
     }
     return (currentTime - startTime);
   }
-  
+  /**
+   * @brief Set the Start Time object
+   * 
+   * @param time 
+   */
   void setStartTime(long time){
     startTime = time;
   }
-  
+  /**
+   * @brief Get the Start Time object
+   * 
+   * @return long 
+   */
   long getStartTime(){
     return startTime;
   }
-  
-  void off(){
-    digitalWrite(id, LOW);
-  }
-  
-  void on(){
-    digitalWrite(id, HIGH);
-  }
-  
+  /**
+   * @brief staring vent and start time
+   * 
+   */
   void start(){
     startTime = millis();
     on();
   }
+  /**
+   * @brief stop vent and off
+   * 
+   */
+  void stop(){
+    off();
+  }
+private:
+  /**
+   * @brief vent off
+   * 
+   */
+  void off(){
+    digitalWrite(id, LOW);
+  }
+  /**
+   * @brief vent on with plate
+   * 
+   */
+  void on(){
+    digitalWrite(id, HIGH);
+  }
 };
-
-
+/**
+ * @brief regulate tempurature in bath
+ */
 class AutoTemp{
   float needTemp = 50.0;// ограничитель температуры +-5
   float high;
   float low;
-public:
   bool FlagTemp = false;
+  float nowTemp;
   void temp(){	
     //считываем напряжение датчика
     int reading = analogRead(SENSORPIN);
     // преобразуем показания в напряжение, для 3.3v используйте значение 3.3
-    float voltage = reading * 5.0;
-    voltage /= 1024.0;
-    // выводим напряжение
-    Serial.print(voltage);
-  	Serial.println(" volts");
+    float voltage = reading * 5.0 / 1024.0;
     // теперь выводим температуру
-    float temperatureC = (voltage - 0.5) * 100 ; //исходя из 10 мВ на градус со смещением 500 мВ
-    Serial.print(temperatureC);
-  	Serial.println(" degrees C");
+    nowTemp = (voltage - 0.5) * 100 ; //исходя из 10 мВ на градус со смещением 500 мВ
     delay(1000); //ждем секунду
     // орграничители температуры в заданом диапазоне
-    if (high <= temperatureC){
-      digitalWrite(3, LOW);
+    if (high <= nowTemp){
+      digitalWrite(HEATINGPIN, LOW);
     }
-    if (low >= temperatureC){
-      digitalWrite(3, HIGH);
+    if (low >= nowTemp){
+      digitalWrite(HEATINGPIN, HIGH);
     }  
   }
+public:
+/**
+ * @brief Set the Need Temp object
+ * 
+ * @param needTemp 
+ */
   void setNeedTemp(float needTemp){
     this->needTemp = needTemp;
     high = needTemp +5;
     low = needTemp -5;
 
   }
-
-
   /**
-   * Off auto temperature
+   * @brief Get the Now Temp object
+   * 
+   * @return float 
+   */
+  float getNowTemp(){
+    return nowTemp;
+  }
+  /**
+   * @brief Off auto temperature
    */
   void OffTemp(){
     FlagTemp = false;  
   	digitalWrite(3, LOW);
   }
+  /**
+   * @brief on auto temperature
+   * 
+   */
   void onTemp(){
     FlagTemp = true;
   }
-
+  /**
+   * @brief update every frame for control system
+   * 
+   */
   void update(){
     if (FlagTemp == true){
 	    temp();
     }
   }
 };
-
 AutoTemp autoTemp = AutoTemp();
-
-
+/**
+ * @brief simulate bath 
+ */
 class Bath{
   float needTemp = 50;
   float temp = 0;
@@ -129,33 +220,70 @@ class Bath{
   VENT vent0;
   VENT vent1;
 public:
+/**
+ * @brief Set the State object
+ * 
+ * @param state 
+ */
   void setState(String state){
     this->state = state;
   }
-  
+  /**
+   * @brief Get the State object
+   * 
+   * @return String 
+   */
   String getState(){
     return state;
   }
+  /**
+   * @brief Set the Need Temp object
+   * 
+   * @param temp 
+   */
   void setNeedTemp(float temp){
     needTemp = temp;
     autoTemp.setNeedTemp(temp);
   }
+  /**
+   * @brief Set the Temp object
+   * 
+   * @param temp 
+   */
   void setTemp(float temp){
        this->temp = temp;
   }
-
+  /**
+   * @brief Get the Temp object
+   * 
+   * @return float 
+   */
   float getTemp(){
     return temp;
   }
-  
+  /**
+   * @brief Set the Connection object
+   * 
+   * @param connection 
+   */
   void setConnection(bool connection){
     this->connection = connection;   
   }
-  
+  /**
+   * @brief Get the Connection object
+   * 
+   * @return true 
+   * @return false 
+   */
   bool getConnection(){
     return connection;
   }
-  
+  /**
+   * @brief Set the Vent object
+   * 
+   * @param id 
+   * @param vent 
+   */
   void setVent(int id, VENT vent){
     if(id==0){
       vent0 = vent; 
@@ -163,7 +291,12 @@ public:
       vent1 = vent;
     }
   }
-  
+  /**
+   * @brief Get the Vent object
+   * 
+   * @param id 
+   * @return VENT 
+   */
   VENT getVent(int id){
     if(id==0){
       return vent0;
@@ -171,8 +304,13 @@ public:
       return vent1;
     }
   }
-  
+  /**
+   * @brief update state bath every frame
+   * 
+   */
   void update(){
+      autoTemp.update();
+      setTemp(autoTemp.getNowTemp());
       if(state.equals("temp")&&temp>needTemp){
         state = "time0";
         vent0.start();
@@ -180,7 +318,7 @@ public:
       }
 
       if(vent0.getLeftTime()<=0 && state.equals("time0")){
-        vent0.off();
+        vent0.stop();
         vent1.start();
         state = "time1";
         return;
@@ -190,28 +328,40 @@ public:
         return;
       }
   }
-
+/**
+ * @brief start bath 
+ * 
+ */
   void start(){
       state = "temp";
       //Старт нагрев
       autoTemp.onTemp();
   }
-  
+  /**
+ * @brief stop bath 
+ * 
+ */
   void stop(){
-    vent0.off();
-    vent1.off();
+    vent0.stop();
+    vent1.stop();
     state = "stop";
     vent0 = VENT();
     vent1 = VENT();
   }
 };
 Bath bath = Bath();
-
+/**
+ * @brief class button for simulate button
+ */
 class Button{
   int buttonPushCounter = 0;   // счётчик нажатия кнопки
   int buttonState = 0;         // текущее состояние кнопки
   int lastButtonState = 0;     // предыдущее состояние кнопки
 public:
+/**
+ * @brief every frame check click
+ * 
+ */
   void update(){
     // считываем показания с вывода кнопки
     buttonState = digitalRead(BUTTON);
@@ -228,27 +378,16 @@ public:
     }
     // сохраняем текущее состояние как последнее состояние для следующего раза
     lastButtonState = buttonState;
-    // // включаем светодиод при каждом втором нажатии, проверяя деление по остатку счётчика нажатий
-    // if (buttonPushCounter % 2 == 0) {
-    //   digitalWrite(ledPin, HIGH);
-    // } else {
-    //   digitalWrite(ledPin, LOW);
-    // }
   }
 };
-
-
 Button button = Button();
-
-
- 
-
-
-
 
 void setup() {
   pinMode(VENT2, OUTPUT); 
   pinMode(VENT1, OUTPUT); 
+  pinMode(BUTTON, INPUT); 
+  pinMode(SENSORPIN, INPUT);
+
   Serial.begin(115200);
   WiFi.softAP(ssid, password, 1, false, 8);
   delay(100);
@@ -267,43 +406,29 @@ void setup() {
 void loop() {
   server.handleClient();
   bath.update();
-  temp();
-  //button.update();
-  //autoTemp.update();
+  button.update();
+  
 }
 
-void temp(){//For connection need to change
-    bath.setTemp(random(0, 100));
-    return;
-    //считываем напряжение датчика
-    int reading = analogRead(0); /*аналоговый ввод для выхода датчика TMP36
-    разрешение 10 мВ / градус цельсия со смещением на 500 мВ 
-    для отрицательной температуры*/
-    // преобразуем показания в напряжение, для 3.3v используйте значение 3.3
-    float voltage = reading * 5.0;
-    voltage /= 1024.0;
-    // выводим напряжение
-    //Serial.print(voltage);
-    //Serial.println(" volts");
-    // теперь выводим температуру
-    float temperatureC = (voltage - 0.5) * 100 ; //исходя из 10 мВ на градус со смещением 500 мВ
-    bath.setTemp(temperatureC);
-  }
-
+/**
+ * @brief handle last arg from server
+ */
 void handle_args(){
  String command = "";
   for(int i=0; i<server.args(); i++){
     command = server.arg(i); 
   }
-
   if((command.substring(0, command.indexOf(','))).equals("connection")){
     server.send(200, "text/html", "" + command);
   } else {
-    readMessage(command);  
+    readCommand(command);  
   }
 }
-
-void readMessage(String str){
+/**
+ * @brief handle commands 
+ * @param str commands in style({command,args})
+ */
+void readCommand(String str){
   int n=0;
   String command = str.substring(0, str.indexOf(','));
   String args = str.substring(str.indexOf(',')+1, str.length());
@@ -329,6 +454,7 @@ void readMessage(String str){
     return;
   }
   if(command.equals("setReady")){
+    bath.stop();
     bath.setState("ready");
     return;
   }
@@ -355,11 +481,9 @@ void handle_OnConnect(){
   Serial.print("GPIO7 Status: ");
   server.send(200, "text/html", SendHTML()); 
 }
-
 void handle_NotFound(){
   server.send(404, "text/plain", "Not found");
 }
-
 String SendHTML() {
   String ptr = "<!DOCTYPE html> <html>\n";
   ptr +="<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\">\n";
@@ -377,8 +501,8 @@ String SendHTML() {
   ptr +="<body>\n";
   ptr +="<h1>ESP8266 Web Server</h1>\n";
   ptr +="<h3>";
-  ptr += "VENT1 = "+ String(bath.getVent(0).getLeftTime()/1000)+ "seconds ";
-  ptr += "VENT2 = "+ String(bath.getVent(1).getLeftTime()/1000)+ "seconds ";
+  ptr += "VENT1 = "+ String(bath.getVent(0).getLeftTime()/1000)+ " seconds\n";
+  ptr += "VENT2 = "+ String(bath.getVent(1).getLeftTime()/1000)+ " seconds ";
   ptr += "</h3>\n";
   ptr +="</body>\n";
   ptr +="</html>\n";
