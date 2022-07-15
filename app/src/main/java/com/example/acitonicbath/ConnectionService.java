@@ -34,7 +34,7 @@ public class ConnectionService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
         stateUpdateNotification();
-        createImmortalNottification("Connection", "Start");
+        createImmortalNotification("Connection", "Start", ID);
         Log.wtf(TAG, "onStartCommand");
         return START_STICKY;
     }
@@ -72,16 +72,16 @@ public class ConnectionService extends Service {
      * @param title title which show
      * @param text text which show
      */
-    private void createImmortalNottification(String title, String text){
+    private void createImmortalNotification(String title, String text, String NOTIFICATION_ID){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             NotificationChannel notificationChannel = new NotificationChannel(
-                    ID, "2", NotificationManager.IMPORTANCE_LOW);
+                    NOTIFICATION_ID, "2", NotificationManager.IMPORTANCE_LOW);
             NotificationManager manager = getSystemService(NotificationManager.class);
             manager.createNotificationChannel(notificationChannel);
         }
         Intent intent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
-        Notification notification = new NotificationCompat.Builder(this, ID)
+        Notification notification = new NotificationCompat.Builder(this, NOTIFICATION_ID)
                 .setContentTitle(title)
                 .setContentText(text)
                 .setSmallIcon(R.mipmap.ic_launcher)
